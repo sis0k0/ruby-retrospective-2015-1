@@ -24,10 +24,8 @@ end
 def danger?(snake, direction, dimensions)
   next_position = move(snake, direction)
 
-  obstacle_in_one_turn = obstacle_ahead?(snake, direction, dimensions)
-  obstacle_in_two_turns = obstacle_ahead?(next_position, direction, dimensions)
-
-  obstacle_in_one_turn or obstacle_in_two_turns
+  obstacle_ahead?(snake, direction, dimensions) or
+    obstacle_ahead?(next_position, direction, dimensions)
 end
 
 def available_positions(food, snake, dimensions)
