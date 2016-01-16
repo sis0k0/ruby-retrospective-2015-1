@@ -1,20 +1,41 @@
-BGN_EXCHANGE_RATES = {
-  bgn: 1,
-  usd: 1.7408,
-  eur: 1.9557,
-  gbp: 2.6415,
-}
-
-PRECISION = 2
-
 def convert_to_bgn(price, currency)
-  price_bgn = price * BGN_EXCHANGE_RATES[currency]
-  price_bgn.round PRECISION
+  Price.new(price, currency).to_bgn
 end
 
 def compare_prices(first_price, first_currency, second_price, second_currency)
-  first_price_bgn = convert_to_bgn(first_price, first_currency)
-  second_price_bgn = convert_to_bgn(second_price, second_currency)
+  first = Price.new(first_price, first_currency)
+  second = Price.new(second_price, second_currency)
 
-  first_price_bgn <=> second_price_bgn
+  first <=> second
+end
+
+class Price
+  BGN_EXCHANGE_RATES = {
+    bgn: 1,
+    usd: 1.7408,
+    eur: 1.9557,
+    gbp: 2.6415,
+  }
+
+  PRECISION = 2
+
+  def initialize(price, currency)
+    @price = price
+    @currency = currency
+  end
+
+  def to_bgn
+    price_bgn = @price * BGN_EXCHANGE_RATES[@currency]
+    format(price_bgn)
+  end
+
+  def <=>(other_price)
+    self.to_bgn <=> other_price.to_bgn
+  end
+
+  private
+
+  def format(price)
+    price.round PRECISION
+  end
 end
