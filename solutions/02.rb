@@ -1,8 +1,6 @@
 def get_next_position(snake, direction)
   head = snake.last
-  next_position = [head[0] + direction[0], head[1] + direction[1]]
-
-  next_position
+  [head[0] + direction[0], head[1] + direction[1]]
 end
 
 def out_of_bounds?(position, dimensions)
@@ -15,23 +13,15 @@ def out_of_bounds?(position, dimensions)
 end
 
 def grow(snake, direction)
-  next_position = get_next_position(snake, direction)
-  snake.push next_position
-
-  snake
+  snake.dup.push(get_next_position(snake, direction))
 end
 
 def move(snake, direction)
-  grow(snake, direction)
-  snake.delete_at(0)
-
-  snake
+  snake.drop(1).push(get_next_position(snake, direction))
 end
 
 def new_food(food, snake, dimensions)
-  x = rand(dimensions[:width])
-  y = rand(dimensions[:height])
-  newly_generated_food = [x, y]
+  newly_generated_food = [rand(dimensions[:width]), rand(dimensions[:height])]
 
   if snake.include?(newly_generated_food) or food.include?(newly_generated_food)
     new_food(food, snake, dimensions)
