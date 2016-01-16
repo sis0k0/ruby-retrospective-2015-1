@@ -21,13 +21,7 @@ def move(snake, direction)
 end
 
 def new_food(food, snake, dimensions)
-  newly_generated_food = [rand(dimensions[:width]), rand(dimensions[:height])]
-
-  if snake.include?(newly_generated_food) or food.include?(newly_generated_food)
-    new_food(food, snake, dimensions)
-  else
-    newly_generated_food
-  end
+  available_positions(food, snake, dimensions).sample
 end
 
 def obstacle_ahead?(snake, direction, dimensions)
@@ -44,4 +38,19 @@ def danger?(snake, direction, dimensions)
   obstacle_two_turns = obstacle_ahead?(next_position, direction, dimensions)
 
   obstacle_one_turn or obstacle_two_turns
+end
+
+def position_taken?(food, snake, position)
+  snake.include?(position) or food.include?(position)
+end
+
+def available_positions(food, snake, dimensions)
+  all_positions = playground(dimensions)
+  all_positions - food - snake
+end
+
+def playground(dimensions)
+  x_positions = (0...dimensions[:width]).to_a
+  y_positions = (0...dimensions[:height]).to_a
+  x_positions.product y_positions
 end
