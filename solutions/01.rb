@@ -5,8 +5,10 @@ CURRENCY_TO_BGN = {
   bgn: 1,
 }
 
+PRECISION = 2
+
 def convert_to_bgn(price, currency)
-  (price * CURRENCY_TO_BGN[currency]).round(2)
+  (price * CURRENCY_TO_BGN[currency]).round PRECISION
 end
 
 def compare_prices(first_price, first_currency, second_price, second_currency)
