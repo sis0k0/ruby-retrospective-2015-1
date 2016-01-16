@@ -9,7 +9,7 @@ def grow(snake, direction)
 end
 
 def move(snake, direction)
-  snake.drop(1).push(position_ahead(snake, direction))
+  grow(snake, direction).drop(1)
 end
 
 def new_food(food, snake, dimensions)
