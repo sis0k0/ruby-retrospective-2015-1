@@ -37,48 +37,39 @@ end
 class RationalSequence
   include Enumerable
 
-  def initialize(count = Float::INFINITY)
+  def initialize(count)
     @count = count
   end
 
-  def each
-    n = 1
-    d = 1
-    counter = 0
-
-    if @count > 0
-      yield Rational(n, d)
-      counter += 1
-    end
-
-    while counter < @count
-      number = generate_next_number(n, d)
-      yield number
-
-      n = number.numerator
-      d = number.denominator
-      counter += 1
-    end
+  def each(&block)
+    enum_for(:sequence).
+      lazy.
+      take(@count).
+      each(&block)
   end
 
   private
 
-    def generate_next_number(n, d)
-    if n % 2 == d % 2
-      n += 1
-      d -= 1 unless d == 1
+  def sequence
+    numerator = 1
+    denominator = 1
+
+    loop do
+      yield Rational(numerator, denominator)
+      numerator, denominator = next_pair(numerator, denominator)
+    end
+  end
+
+  def next_pair(numerator, denominator)
+    if numerator % 2 == denominator % 2
+      numerator += 1
+      denominator -= 1 unless denominator == 1
     else
-      d += 1
-      n -= 1 unless n == 1
+      denominator += 1
+      numerator -= 1 unless numerator == 1
     end
 
-    number = Rational(n, d)
-
-    if number.numerator == n && number.denominator == d
-      number
-    else
-      generate_next_number(n, d)
-    end
+    numerator.gcd(denominator) == 1 ? [numerator, denominator] : next_pair(numerator, denominator)
   end
 end
 
@@ -122,7 +113,7 @@ module DrunkenMathematician
 
   def worthless(n)
     nth_fibonacci_number = FibonacciSequence.new(n).to_a.last
-    rational_numbers = RationalSequence.new
+    rational_numbers = RationalSequence.new(nth_fibonacci_number)
     sum = 0
 
     rational_numbers.take_while do |i|
