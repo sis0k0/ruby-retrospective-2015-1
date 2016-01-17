@@ -1,15 +1,7 @@
 class Integer
   def prime?
-    is_prime = true
-
-    (2..self / 2).each do |i|
-      if self % i == 0
-        is_prime = false
-        break
-      end
-    end
-
-    is_prime and self > 1
+    return false if self == 1
+    (2..self / 2).all? { |i| self % i != 0 }
   end
 end
 
