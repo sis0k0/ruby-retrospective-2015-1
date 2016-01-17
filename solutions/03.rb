@@ -81,18 +81,12 @@ class PrimeSequence
   end
 
   def each
-    number = 2 # two is the first prime number
-    counter = 0
-
-    while counter < @count
-      if number.prime?
-        yield number
-        counter += 1
-      end
-      number += 1
-    end
+    1.upto(Float::INFINITY).
+      lazy.
+      select { |n| n.prime? }.
+      take(@count).
+      each { |n| yield n }
   end
-
 end
 
 module DrunkenMathematician
