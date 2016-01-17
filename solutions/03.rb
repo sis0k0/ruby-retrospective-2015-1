@@ -99,26 +99,17 @@ module DrunkenMathematician
   module_function
 
   def meaningless(n)
-    groups = RationalSequence.new(n).
-      partition { |number| number.numerator.prime? or number.denominator.prime? }
+    sequence =  RationalSequence.new(n)
+    primeish, non_primeish = sequence.partition { |n| n.numerator.prime? or n.denominator.prime? }
 
-    first_group_product = groups.first.reduce(1, :*)
-    second_group_product = groups.last.reduce(1, :*)
-
-    first_group_product / second_group_product
+    primeish.reduce(1, :*) / non_primeish.reduce(1, :*)
   end
 
   def aimless(n)
-    sequence = PrimeSequence.new(n)
-
-    rational_numbers = []
-    sequence.each_slice(2) do |pair|
-      pair << 1 if pair.length < 2
-
-      rational_numbers << Rational(pair[0], pair[1])
-    end
-
-    rational_numbers.reduce(0, :+)
+    PrimeSequence.new(n).
+      each_slice(2).
+      map { |numerator, denominator| Rational(numerator, denominator || 1) }.
+      reduce(:+)
   end
 
   def worthless(n)
