@@ -2,7 +2,7 @@ class Integer
   def prime?
     is_prime = true
 
-    (2..self/2).each do |i|
+    (2..self / 2).each do |i|
       if self % i == 0
         is_prime = false
         break
@@ -43,12 +43,12 @@ class RationalSequence
   end
 
   def generate_next_number(n, d)
-    if n%2 == d%2
-      n+= 1
-      d-= 1 unless d == 1
+    if n % 2 == d % 2
+      n += 1
+      d -= 1 unless d == 1
     else
-      d+= 1
-      n-= 1 unless n == 1
+      d += 1
+      n -= 1 unless n == 1
     end
 
     number = Rational(n, d)
@@ -113,7 +113,7 @@ module DrunkenMathematician
     first_group_product = groups.first.reduce(1, :*)
     second_group_product = groups.last.reduce(1, :*)
 
-    first_group_product/second_group_product
+    first_group_product / second_group_product
   end
 
   def aimless(n)
@@ -121,7 +121,7 @@ module DrunkenMathematician
 
     rational_numbers = []
     sequence.each_slice(2) do |pair|
-      pair << 1 if pair.length<2
+      pair << 1 if pair.length < 2
 
       rational_numbers << Rational(pair[0], pair[1])
     end
