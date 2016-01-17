@@ -14,15 +14,22 @@ class FibonacciSequence
     @second = first_two_members[:second]
   end
 
-  def each
+  def each(&block)
+    enum_for(:sequence).
+      lazy.
+      take(@count).
+      each(&block)
+  end
+
+  private
+
+  def sequence
     previous = @first
     current = @second
-    counter = 0
 
-    while counter < @count
+    loop do
       yield previous
       current, previous = current + previous, current
-      counter += 1
     end
   end
 end
@@ -82,12 +89,17 @@ class PrimeSequence
     @count = count
   end
 
-  def each
-    1.upto(Float::INFINITY).
+  def each(&block)
+    enum_for(:sequence).
       lazy.
-      select { |n| n.prime? }.
       take(@count).
-      each { |n| yield n }
+      each(&block)
+  end
+
+  private
+
+  def sequence
+    1.upto(Float::INFINITY).each { |n| yield n if n.prime? }
   end
 end
 
