@@ -34,24 +34,6 @@ class RationalSequence
     @count = count
   end
 
-  def generate_next_number(n, d)
-    if n % 2 == d % 2
-      n += 1
-      d -= 1 unless d == 1
-    else
-      d += 1
-      n -= 1 unless n == 1
-    end
-
-    number = Rational(n, d)
-
-    if number.numerator == n && number.denominator == d
-      number
-    else
-      generate_next_number(n, d)
-    end
-  end
-
   def each
     n = 1
     d = 1
@@ -69,6 +51,26 @@ class RationalSequence
       n = number.numerator
       d = number.denominator
       counter += 1
+    end
+  end
+
+  private
+
+    def generate_next_number(n, d)
+    if n % 2 == d % 2
+      n += 1
+      d -= 1 unless d == 1
+    else
+      d += 1
+      n -= 1 unless n == 1
+    end
+
+    number = Rational(n, d)
+
+    if number.numerator == n && number.denominator == d
+      number
+    else
+      generate_next_number(n, d)
     end
   end
 end
