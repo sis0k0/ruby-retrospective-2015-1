@@ -94,9 +94,7 @@ class Deck
   private
 
   def default_deck(ranks = RANKS)
-    ranks.collect_concat { |rank|
-      SUITS.map { |suit| Card.new(rank, suit) }
-    }
+    ranks.product(SUITS).map { |rank, suit| Card.new(rank, suit) }
   end
 end
 
