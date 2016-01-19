@@ -57,9 +57,7 @@ class Deck
   end
 
   def to_s
-    concatenated_cards = ''
-    @deck.each { |card| concatenated_cards << card.to_s << "\n" }
-    concatenated_cards.strip
+    @deck.map(&:to_s).join("\n")
   end
 
   def deal(cards)
