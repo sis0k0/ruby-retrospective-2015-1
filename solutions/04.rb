@@ -21,8 +21,9 @@ class Deck
   RANKS = [:ace, :king, :queen, :jack, 10, 9, 8, 7, 6, 5, 4, 3, 2]
   SUITS = [:spades, :hearts, :diamonds, :clubs]
 
-  def initialize(deck = default_deck)
+  def initialize(deck = default_deck, ranks = RANKS)
     @deck = deck
+    @ranks = ranks
   end
 
   def size
@@ -49,8 +50,8 @@ class Deck
     @deck.shuffle!
   end
 
-  def sort(ranks = RANKS)
-    @deck.sort_by! { |card| [SUITS.index(card.suit), ranks.index(card.rank)] }
+  def sort
+    @deck.sort_by! { |card| [SUITS.index(card.suit), @ranks.index(card.rank)] }
   end
 
   def to_s
@@ -89,15 +90,11 @@ class BeloteDeck < Deck
   CARDS_FOR_HAND = 8
 
   def initialize(deck = default_deck(RANKS))
-    super(deck)
+    super(deck, RANKS)
   end
 
   def deal
     BeloteHand.new(super CARDS_FOR_HAND)
-  end
-
-  def sort
-    super(RANKS)
   end
 end
 
@@ -106,15 +103,11 @@ class SixtySixDeck < Deck
   CARDS_FOR_HAND = 6
 
   def initialize(deck = default_deck(RANKS))
-    super(deck)
+    super(deck, RANKS)
   end
 
   def deal
     SixtySixHand.new(super CARDS_FOR_HAND)
-  end
-
-  def sort
-    super(RANKS)
   end
 end
 
