@@ -5,7 +5,7 @@ def position_ahead(snake, direction)
 end
 
 def grow(snake, direction)
-  snake.dup.push(position_ahead(snake, direction))
+  snake.clone.push(position_ahead(snake, direction))
 end
 
 def move(snake, direction)
