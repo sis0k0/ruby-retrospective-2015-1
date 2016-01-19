@@ -16,6 +16,29 @@ class Card
 end
 
 class Deck
+  class Hand
+    SUITS = [:spades, :hearts, :diamonds, :clubs]
+    attr_reader :cards
+
+    def initialize(cards)
+      @cards = cards
+    end
+
+    def size
+      @cards.length
+    end
+
+    def king_and_queen?(suit)
+      includes?(:king, suit) and includes?(:queen, suit)
+    end
+
+    private
+
+    def includes?(rank, suit)
+      @cards.include? Card.new(rank, suit)
+    end
+  end
+
   include Enumerable
 
   RANKS = [:ace, :king, :queen, :jack, 10, 9, 8, 7, 6, 5, 4, 3, 2]
@@ -83,6 +106,16 @@ class WarDeck < Deck
   def deal
     WarHand.new(super CARDS_FOR_HAND)
   end
+
+  class WarHand < Deck::Hand
+    def play_card
+      @cards.shift
+    end
+
+    def allow_face_up?
+      self.size <= 3
+    end
+  end
 end
 
 class BeloteDeck < Deck
@@ -95,6 +128,66 @@ class BeloteDeck < Deck
 
   def deal
     BeloteHand.new(super CARDS_FOR_HAND)
+  end
+
+  class BeloteHand < Deck::Hand
+    RANKS = [7, 8, 9, :jack, :queen, :king, 10, :ace]
+
+    def highest_of_suit(suit)
+      sorted_cards.select { |card| card.suit == suit }.last
+    end
+
+    def belote?
+      SUITS.any? { |suit| king_and_queen? suit }
+    end
+
+    def tierce?
+      consecutive? 3
+    end
+
+    def quarte?
+      consecutive? 4
+    end
+
+    def quint?
+      consecutive? 5
+    end
+
+    def carre_of_jacks?
+      carre?(:jack)
+    end
+
+    def carre_of_nines?
+      carre?(9)
+    end
+
+    def carre_of_aces?
+      carre?(:ace)
+    end
+
+    private
+
+    def consecutive?(number_of_cons)
+      SUITS.any? do |suit|
+        sorted_cards.select { |card| card.suit == suit }.
+          each_cons(number_of_cons).
+          any? { |sequence| consecutive_ranks? sequence }
+      end
+    end
+
+    def consecutive_ranks?(cards)
+      cards.each_cons(2).all? do |first, second|
+        RANKS.index(first.rank) == RANKS.index(second.rank) - 1
+      end
+    end
+
+    def sorted_cards
+      @cards.sort_by { |card| [SUITS.index(card.suit), RANKS.index(card.rank)] }
+    end
+
+    def carre?(rank)
+      @cards.select { |card| card.rank == rank }.count == 4
+    end
   end
 end
 
@@ -109,108 +202,15 @@ class SixtySixDeck < Deck
   def deal
     SixtySixHand.new(super CARDS_FOR_HAND)
   end
-end
 
-class Hand
-  SUITS = [:spades, :hearts, :diamonds, :clubs]
-  attr_reader :cards
-
-  def initialize(cards)
-    @cards = cards
-  end
-
-  def size
-    @cards.length
-  end
-
-  def king_and_queen?(suit)
-    includes?(:king, suit) and includes?(:queen, suit)
-  end
-
-  private
-
-  def includes?(rank, suit)
-    @cards.include? Card.new(rank, suit)
-  end
-end
-
-class WarHand < Hand
-  def play_card
-    @cards.shift
-  end
-
-  def allow_face_up?
-    self.size <= 3
-  end
-end
-
-class BeloteHand < Hand
-  RANKS = [7, 8, 9, :jack, :queen, :king, 10, :ace]
-
-  def highest_of_suit(suit)
-    sorted_cards.select { |card| card.suit == suit }.last
-  end
-
-  def belote?
-    SUITS.any? { |suit| king_and_queen? suit }
-  end
-
-  def tierce?
-    consecutive? 3
-  end
-
-  def quarte?
-    consecutive? 4
-  end
-
-  def quint?
-    consecutive? 5
-  end
-
-  def carre_of_jacks?
-    carre?(:jack)
-  end
-
-  def carre_of_nines?
-    carre?(9)
-  end
-
-  def carre_of_aces?
-    carre?(:ace)
-  end
-
-  private
-
-  def consecutive?(number_of_cons)
-    SUITS.any? do |suit|
-      sorted_cards.select { |card| card.suit == suit }.
-        each_cons(number_of_cons).
-        any? { |sequence| consecutive_ranks? sequence }
+  class SixtySixHand < Deck::Hand
+    def twenty?(trump_suit)
+      allowed_suits = SUITS - [trump_suit]
+      allowed_suits.any? { |suit| king_and_queen? suit }
     end
-  end
 
-  def consecutive_ranks?(cards)
-    cards.each_cons(2).all? do |first, second|
-      RANKS.index(first.rank) == RANKS.index(second.rank) - 1
+    def forty?(trump_suit)
+      king_and_queen? trump_suit
     end
-  end
-
-  def sorted_cards
-    @cards.sort_by { |card| [SUITS.index(card.suit), RANKS.index(card.rank)] }
-  end
-
-  def carre?(rank)
-    @cards.select { |card| card.rank == rank }.count == 4
-  end
-end
-
-class SixtySixHand < Hand
-  def twenty?(trump_suit)
-    allowed_suits = SUITS - [trump_suit]
-    allowed_suits.any? { |suit| king_and_queen? suit }
-  end
-
-  def forty?(trump_suit)
-    king_and_queen? trump_suit
   end
 end
