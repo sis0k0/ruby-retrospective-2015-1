@@ -57,7 +57,9 @@ class Deck
   end
 
   def to_s
-    @deck.each { |card| card.to_s }
+    concatenated_cards = ''
+    @deck.each { |card| concatenated_cards << card.to_s << "\n" }
+    concatenated_cards.strip
   end
 
   def deal(cards)
@@ -66,10 +68,11 @@ class Deck
     hand
   end
 
-  private
   def each
     @deck.each { |card| yield card }
   end
+
+  private
 
   def default_deck(ranks = RANKS)
     ranks.collect_concat { |rank|
@@ -184,17 +187,13 @@ class BeloteHand < Hand
 
   private
   def consecutive?(number_of_cons)
-    sorted_cards = sort(@cards)
-
     ranks = split_by_suit(sorted_cards).
       map { |group| group.map { |rank| RANKS.index(rank) } }
 
     ranks.map do |suit|
       suit.each_cons(number_of_cons).
-      map { |arr| consecutive_numbers?(arr) }.
-      any?
-    end.
-    any?
+      map { |arr| consecutive_numbers?(arr) }.any?
+    end.any?
   end
 
   def consecutive_numbers?(arr)
@@ -207,8 +206,8 @@ class BeloteHand < Hand
     map { |group| group.map { |card| card.rank } }
   end
 
-  def sort(cards)
-    cards.sort! do |a, b|
+  def sorted_cards
+    @cards.dup.sort! do |a, b|
       sort = SUITS.index(a.suit) <=> SUITS.index(b.suit)
       sort.zero? ? (RANKS.index(b.rank) <=> RANKS.index(a.rank)) : sort
     end
