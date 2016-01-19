@@ -155,9 +155,7 @@ class BeloteHand < Hand
   RANKS = [7, 8, 9, :jack, :queen, :king, 10, :ace]
 
   def highest_of_suit(suit)
-    @cards.select { |card| card.suit == suit }.
-      sort { |a, b| RANKS.index(a.rank) <=> RANKS.index(b.rank) }.
-      last
+    sorted_cards.select { |card| card.suit == suit }.last
   end
 
   def belote?
