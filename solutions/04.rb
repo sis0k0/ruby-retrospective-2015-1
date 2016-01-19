@@ -191,30 +191,21 @@ class BeloteHand < Hand
   private
 
   def consecutive?(number_of_cons)
-    ranks = split_by_suit(sorted_cards).
-      map { |group| group.map { |rank| RANKS.index(rank) } }
-
-    ranks.map do |suit|
-      suit.each_cons(number_of_cons).
-      map { |arr| consecutive_numbers?(arr) }.any?
-    end.any?
+    SUITS.any? do |suit|
+      sorted_cards.select { |card| card.suit == suit }.
+        each_cons(number_of_cons).
+        any? { |sequence| consecutive_ranks? sequence }
+    end
   end
 
-  def consecutive_numbers?(arr)
-    arr.each_cons(2).all? { |a, b| a == b + 1 }
-  end
-
-  def split_by_suit(cards)
-    cards.group_by { |card| card.suit }.
-    map { |group| group.last }.
-    map { |group| group.map { |card| card.rank } }
+  def consecutive_ranks?(cards)
+    cards.each_cons(2).all? do |first, second|
+      RANKS.index(first.rank) == RANKS.index(second.rank) - 1
+    end
   end
 
   def sorted_cards
-    @cards.dup.sort! do |a, b|
-      sort = SUITS.index(a.suit) <=> SUITS.index(b.suit)
-      sort.zero? ? (RANKS.index(b.rank) <=> RANKS.index(a.rank)) : sort
-    end
+    @cards.sort_by { |card| [SUITS.index(card.suit), RANKS.index(card.rank)] }
   end
 
   def carre?(rank)
