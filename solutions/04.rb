@@ -132,6 +132,16 @@ class Hand
   def size
     @cards.length
   end
+
+  def king_and_queen?(suit)
+    includes?(:king, suit) and includes?(:queen, suit)
+  end
+
+  private
+
+  def includes?(rank, suit)
+    @cards.include? Card.new(rank, suit)
+  end
 end
 
 class WarHand < Hand
@@ -154,9 +164,7 @@ class BeloteHand < Hand
   end
 
   def belote?
-    split_by_suit(@cards).
-      map { |suit| suit.include? :queen and suit.include? :king }.
-      any?
+    SUITS.any? { |suit| king_and_queen? suit }
   end
 
   def tierce?
@@ -184,6 +192,7 @@ class BeloteHand < Hand
   end
 
   private
+
   def consecutive?(number_of_cons)
     ranks = split_by_suit(sorted_cards).
       map { |group| group.map { |rank| RANKS.index(rank) } }
@@ -218,17 +227,11 @@ end
 
 class SixtySixHand < Hand
   def twenty?(trump_suit)
-    @cards.select { |card| card.suit != trump_suit }.
-      group_by { |card| card.suit }.
-      map { |group| group.last }.
-      map { |suit| suit.map! { |card| card.rank } }.
-      map { |suit| suit.include? :queen and suit.include? :king }.
-      any?
+    allowed_suits = SUITS - [trump_suit]
+    allowed_suits.any? { |suit| king_and_queen? suit }
   end
 
   def forty?(trump_suit)
-    trumps = @cards.select { |card| card.suit == trump_suit }.
-      map { |card| card.rank }
-    trumps.include? :queen and trumps.include? :king
+    king_and_queen? trump_suit
   end
 end
