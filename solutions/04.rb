@@ -18,7 +18,7 @@ end
 class Deck
   include Enumerable
 
-  RANKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+  RANKS = [:ace, :king, :queen, :jack, 10, 9, 8, 7, 6, 5, 4, 3, 2]
   SUITS = [:spades, :hearts, :diamonds, :clubs]
 
   def initialize(deck = default_deck)
@@ -50,10 +50,7 @@ class Deck
   end
 
   def sort(ranks = RANKS)
-    @deck.sort! do |a, b|
-      comp = SUITS.index(a.suit) <=> SUITS.index(b.suit)
-      comp.zero? ? (ranks.index(b.rank) <=> ranks.index(a.rank)) : comp
-    end
+    @deck.sort_by! { |card| [SUITS.index(card.suit), ranks.index(card.rank)] }
   end
 
   def to_s
@@ -88,7 +85,7 @@ class WarDeck < Deck
 end
 
 class BeloteDeck < Deck
-  RANKS = [7, 8, 9, :jack, :queen, :king, 10, :ace]
+  RANKS = [:ace, 10, :king, :queen, :jack, 9, 8, 7]
   CARDS_FOR_HAND = 8
 
   def initialize(deck = default_deck(RANKS))
@@ -105,7 +102,7 @@ class BeloteDeck < Deck
 end
 
 class SixtySixDeck < Deck
-  RANKS = [9, :jack, :queen, :king, 10, :ace]
+  RANKS = [:ace, 10, :king, :queen, :jack, 9]
   CARDS_FOR_HAND = 6
 
   def initialize(deck = default_deck(RANKS))
